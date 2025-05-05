@@ -18,7 +18,7 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
 ## 🚀 Tecnologias Utilizadas
 
 - **Frontend:** Flutter
-- **Backend:** Node.js (opcional, para APIs, autenticação, etc)
+- **Backend:** FastAPI
 - **IA / Processamento de Linguagem Natural:** Python (possivelmente com modelos como spaCy, Transformers ou custom LLM)
 - **Banco de Dados:** A definir (sugestões: Firebase, PostgreSQL, MongoDB)
 - **Outros:** Pandas, Matplotlib, Scikit-learn (para análise e previsão)
@@ -38,7 +38,12 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
 
 ## 📦 Como Rodar o Projeto
 
-Em breve.
+### 🐋 Docker
+- Para rodar:
+- `docker compose up --watch`
+- `docker compose run app /bin/bash`ou `docker compose run app python`
+- Para parar o container:
+- `docker compose down` ou `docker compose down -v` (remover volumes)
 
 ---
 
