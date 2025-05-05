@@ -5,4 +5,4 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"mensagem": "Olá, FastAPI no Windows!"}
+    return {"mensagem": "Docker tá funfando"}
