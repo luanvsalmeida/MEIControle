@@ -35,13 +35,13 @@ router  = APIRouter()
 from api.db.config import DATABASE_URL
 
 # POST/api/signup
-#def hash_password(password: str):
-#    return pwd_context.hash(password)
+def hash_password(password: str):
+    return pwd_context.hash(password)
 
 @router.post("/signup", response_model=UserModel)
 def create_user(payload: UserCreateSchema, session: Session = Depends(get_session)): 
     data = payload.model_dump()
-    #data["password"] = hash_password(data["password"])
+    data["password"] = hash_password(data["password"])
     obj = UserModel.model_validate(data)
     session.add(obj)
     session.commit()
@@ -57,7 +57,7 @@ def signin(payload: UserSignInSchema, session: Session = Depends(get_session)):
     if not user or not verify_password(payload.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    token_data = {"sub": str(user.id)}  # or user.email
+    token_data = {"sub": str(user.userId)}  # or user.email
     token = create_access_token(data=token_data)
     
     return {"access_token": token, "token_type": "bearer"}
