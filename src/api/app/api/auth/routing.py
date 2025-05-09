@@ -50,7 +50,7 @@ def create_user(payload: UserCreateSchema, session: Session = Depends(get_sessio
 
 
 
-# /signin
+# POST/api/signin
 @router.post("/signin")
 def signin(payload: UserSignInSchema, session: Session = Depends(get_session)):
     user = session.exec(select(UserModel).where(UserModel.email == payload.email)).first()
@@ -67,24 +67,27 @@ def signin(payload: UserSignInSchema, session: Session = Depends(get_session)):
 # /delete-account
 
 # /edit-account
+@router.put("/{user_id}", response_model=UserModel)
+def edit_account(user_id: int,
+                 payload: UserUpdateSchema,
+                 session: Session = Depends(get_session)):
+    query = select(UserModel).where(UserModel.userId == user_id)
+    obj = session.exc(query).first()
+    if not obj: 
+        raise HTTPException(status_code=404, detail="User not found")
 
-# GET/api/Users/
-"""
+    data = payload.model_dump()
 
-# POST/api/Users/
-@router.post("/", response_model=UserModel)
-def create_User(
-    payload: UserCreateSchema, 
-    session: Session = Depends(get_session)):
-    print(type(payload.page)) 
-    data = payload.model_dump() # payload -> dict -> pydantic
-    obj = UserModel.model_validate(data)
+    for k, v in data.items():
+        setattr(obj, k, v)
     session.add(obj)
     session.commit()
     session.refresh(obj)
-    return obj 
 
-
+    return obj
+ 
+# GET/api/Users/
+"""
 @router.get("/{User_id}", response_model=UserModel)
 def get_User(User_id:int, session: Session = Depends(get_session)): 
     # a single row
@@ -94,26 +97,5 @@ def get_User(User_id:int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return result
 
-
-@router.put("/{User_id}", response_model=UserModel)
-def update_User(User_id:int, 
-                 payload: UserUpdateSchema,
-                 session: Session = Depends(get_session)): 
-    # a single row
-    query = select(UserModel).where(UserModel.id == User_id)
-    obj = session.exec(query).first()
-    if not obj:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    data = payload.model_dump() # payload -> dict -> pydantic
-    
-    for k, v in data.items():   # for key value
-        setattr(obj, k, v)      # set attribute for obj 
-
-    session.add(obj)
-    session.commit()
-    session.refresh(obj)
-
-    return obj
 
     """
