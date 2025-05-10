@@ -72,11 +72,12 @@ def edit_account(user_id: int,
                  payload: UserUpdateSchema,
                  session: Session = Depends(get_session)):
     query = select(UserModel).where(UserModel.userId == user_id)
-    obj = session.exc(query).first()
+    obj = session.exec(query).first()
     if not obj: 
         raise HTTPException(status_code=404, detail="User not found")
 
     data = payload.model_dump()
+    data["password"] = hash_password(data["password"])
 
     for k, v in data.items():
         setattr(obj, k, v)
