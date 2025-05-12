@@ -24,6 +24,14 @@ def get_utc_now():
 +--------------|---------------|----------|
 |      date    |    datetime   | auto-gen |
 +-----------------------------------------+
+
+tokens will be something like:
+
+{
+    "operation": "inflow"/"outflow"/"report"/"forecast" -> it will define the routing
+    "value": "50.00"(in case of in/outflow)/"start-end (a date period in case of report or forecast)
+    "item": "bebidas" (in/outflow)/"pdf", "csv", etc. (report)/"sells" (forecast)
+}
 """
 
 class RoleEnum(str, Enum):
@@ -48,3 +56,7 @@ class MessageCreateSchema(SQLModel):
     role: RoleEnum
     content: constr(max_length=1000)
     tokens: Optional[List[str]] = None
+
+class MessageListSchema(SQLModel):
+    results: List[MessageModel]
+    count: int
