@@ -11,10 +11,11 @@ def get_utc_now():
     return datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
 
 
+# page visits at any given time
 class EventModel(TimescaleModel, table=True):
     # id: Optional[int] = Field(default=None, primary_key=True)
     # id: int
-    page: Optional[str] = ""
+    page: str = Field(index=True) # /about 
     description: Optional[str] = ""
     # created_at: datetime = Field(
     #     default_factory=get_utc_now,

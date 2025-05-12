@@ -25,4 +25,22 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
     session.commit()
     session.refresh(obj)
 
-# GET /api/message
+# GET /api/message/{chat_id}
+@router.get("/{chat_id}", response_model=MessageModel)
+def get_Message(chat_id:int, session: Session = Depends(get_session)): 
+    # a single row
+    query = select(MessageModel).where(MessageModel.chatID == chat_id)
+    result = session.exec(query).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="Message not found")
+    return result
+
+# GET /api/message/{message_id}
+@router.get("/{message_id}", response_model=MessageModel)
+def get_Message(message_id:int, session: Session = Depends(get_session)): 
+    # a single row
+    query = select(MessageModel).where(MessageModel.messageId == message_id)
+    result = session.exec(query).first()
+    if not result:
+        raise HTTPException(status_code=404, detail="Message not found")
+    return result
