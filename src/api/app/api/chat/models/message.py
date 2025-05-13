@@ -1,7 +1,6 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
 from typing import List, Optional
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import JSON
 from pydantic import constr 
 import sqlmodel 
@@ -39,7 +38,7 @@ class RoleEnum(str, Enum):
 
 class MessageModel(SQLModel, table=True):
     messageId: Optional[int] = Field(default=None, primary_key=True)
-    chatID: int = Field(nullable=False, foreign_key="chatmodel.chatId")
+    chatId: int = Field(nullable=False, foreign_key="chatmodel.chatId")
     role: RoleEnum = Field(nullable=False, index=True)
     content: str = Field(nullable=False) 
     tokens: Optional[List[str]] = Field(default=None, sa_type=JSON)
