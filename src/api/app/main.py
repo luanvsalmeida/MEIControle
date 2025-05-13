@@ -23,8 +23,8 @@ app.include_router(event_router, prefix='/api/events')
 app.include_router(auth_router, prefix='/api/auth')
 app.include_router(chat_router, prefix='/api/chat')
 app.include_router(message_router, prefix='/api/message')
-app.include_router(chat_router, prefix='/api/inflow')
-app.include_router(message_router, prefix='/api/outflow')
+app.include_router(inflow_router, prefix='/api/inflow')
+app.include_router(outflow_router, prefix='/api/outflow')
 
 # /api/events
 
