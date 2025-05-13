@@ -25,7 +25,7 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
 # GET /api/message/{chat_id}
 @router.get("/by_chat/{chat_id}", response_model=MessageListSchema)
 def get_Message(chat_id: int, session: Session = Depends(get_session)): 
-    query = select(MessageModel).where(MessageModel.chatID == chat_id).order_by(MessageModel.messageId)
+    query = select(MessageModel).where(MessageModel.chatId == chat_id).order_by(MessageModel.messageId)
     results = session.exec(query).all()
     if not results:
         raise HTTPException(status_code=404, detail="Message not found")
