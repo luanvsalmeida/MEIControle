@@ -45,7 +45,7 @@ class OutflowModel(SQLModel, table=True):
     
 class OutflowCreateSchema(SQLModel):
     userId: int
-    client: constr(max_length=50)
+    supplier: constr(max_length=50)
     value: float 
     type: TypeEnum
     paymentForm: PaymentEnum

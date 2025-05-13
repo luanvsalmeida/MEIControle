@@ -22,19 +22,19 @@ def send_outflow(payload: OutflowCreateSchema, session: Session = Depends(get_se
     session.refresh(obj)
     return obj
 
-# GET /api/Outflow/{user_id}
-@router.get("/{user_id}", response_model=OutflowListSchema)
+# GET /api/Outflow/by_user/{user_id}
+@router.get("/by_user/{user_id}", response_model=OutflowListSchema)
 def send_outflow(user_id: int, session: Session = Depends(get_session)):
-    query = select(OutflowModel).where(OutflowModel.userId == user_id).order_by(OutflowModel.OutflowId)
+    query = select(OutflowModel).where(OutflowModel.userId == user_id).order_by(OutflowModel.outflowId)
     results = session.exec(query).all()
     if not results:
         raise HTTPException(status_code=404, detail="Outflow not found") 
     return {"results": results, "count": len(results)}
 
 # GET /api/Outflow/{Outflow_id}
-@router.get("/{Outflow_id}", response_model=OutflowModel)
-def get_outflow_by_id(Outflow_id: int, session: Session = Depends(get_session)):
-    query = select(OutflowModel).where(OutflowModel.OutflowId == Outflow_id)
+@router.get("/{outflow_id}", response_model=OutflowModel)
+def get_outflow_by_id(outflow_id: int, session: Session = Depends(get_session)):
+    query = select(OutflowModel).where(OutflowModel.outflowId == outflow_id)
     result = session.exec(query).first()
     if not result:
         raise HTTPException(status_code=404, detail="Outflow not found")

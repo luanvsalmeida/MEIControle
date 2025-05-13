@@ -23,8 +23,8 @@ def send_inflow(payload: InflowCreateSchema, session: Session = Depends(get_sess
     return obj
 
 # GET /api/inflow/{user_id}
-@router.get("/{user_id}", response_model=InflowListSchema)
-def send_outflow(user_id: int, session: Session = Depends(get_session)):
+@router.get("/by_user/{user_id}", response_model=InflowListSchema)
+def send_inflow(user_id: int, session: Session = Depends(get_session)):
     query = select(InflowModel).where(InflowModel.userId == user_id).order_by(InflowModel.inflowId)
     results = session.exec(query).all()
     if not results:
