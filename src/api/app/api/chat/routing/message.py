@@ -1,16 +1,12 @@
-import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt, JWTError
-from passlib.context import CryptContext
-from datetime import datetime, timedelta
 
 from api.db.session import get_session
 
 from api.chat.models.message import (
     MessageModel,
-    MessageCreateSchema
+    MessageCreateSchema,
+    MessageListSchema
 )
 
 router = APIRouter()
@@ -24,19 +20,21 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
     session.add(obj)
     session.commit()
     session.refresh(obj)
+    return obj
 
 # GET /api/message/{chat_id}
-@router.get("/{chat_id}", response_model=MessageModel)
-def get_Message(chat_id:int, session: Session = Depends(get_session)): 
-    # a single row
-    query = select(MessageModel).where(MessageModel.chatID == chat_id)
-    result = session.exec(query).first()
-    if not result:
+@router.get("/by_chat/{chat_id}", response_model=MessageListSchema)
+def get_Message(chat_id: int, session: Session = Depends(get_session)): 
+    query = select(MessageModel).where(MessageModel.chatID == chat_id).order_by(MessageModel.messageId)
+    results = session.exec(query).all()
+    if not results:
         raise HTTPException(status_code=404, detail="Message not found")
-    return result
+    
+    return {"results": results, "count": len(results)}
+
 
 # GET /api/message/{message_id}
-@router.get("/{message_id}", response_model=MessageModel)
+@router.get("/by_message/{message_id}", response_model=MessageModel)
 def get_Message(message_id:int, session: Session = Depends(get_session)): 
     # a single row
     query = select(MessageModel).where(MessageModel.messageId == message_id)

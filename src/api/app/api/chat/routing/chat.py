@@ -1,16 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt, JWTError
-from passlib.context import CryptContext
-from datetime import datetime, timedelta
 
 from api.db.session import get_session
 
 from api.chat.models.chat import (
     ChatModel,
-    ChatCreateSchema,
-    ChatListSchema
+    ChatCreateSchema
 )
 
 router = APIRouter()
@@ -24,6 +19,7 @@ def send_Chat(payload: ChatCreateSchema, session: Session = Depends(get_session)
     session.add(obj)
     session.commit()
     session.refresh(obj)
+    return obj
 
 # GET /api/chat/{user_id}
 @router.get("/{user_id}", response_model=ChatModel)

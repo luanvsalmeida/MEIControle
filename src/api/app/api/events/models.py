@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
 from typing import List, Optional
+from datetime import datetime
 # from pydantic import BaseModel, Field
 import sqlmodel
 from sqlmodel import SQLModel, Field
