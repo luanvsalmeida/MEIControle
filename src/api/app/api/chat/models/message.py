@@ -6,9 +6,7 @@ from sqlalchemy import JSON
 from pydantic import constr 
 import sqlmodel 
 from sqlmodel import SQLModel, Field
-
-def get_utc_now():
-    return datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+from timescaledb.utils import get_utc_now
 
 """
 +----------------- MESSAGE ---------------+
@@ -41,13 +39,13 @@ class RoleEnum(str, Enum):
 
 class MessageModel(SQLModel, table=True):
     messageId: Optional[int] = Field(default=None, primary_key=True)
-    chatID: int = Field(nullable=False, foreign_key="chat.chatId")
+    chatID: int = Field(nullable=False, foreign_key="chatmodel.chatId")
     role: RoleEnum = Field(nullable=False, index=True)
     content: str = Field(nullable=False) 
     tokens: Optional[List[str]] = Field(default=None, sa_type=JSON)
     date: datetime = Field(
         default_factory=get_utc_now,
-        sa_type=sqlmodel.sql.sqltypes.DateTime(timezone=True),
+        sa_type=sqlmodel.DateTime(timezone=True),
         nullable=False
     )
 

@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from api.db.session import init_db
 from api.events import router as event_router
 from api.auth import router as auth_router
+from api.chat.routing.chat import router as chat_router
+from api.chat.routing.message import router as message_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,6 +19,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(event_router, prefix='/api/events')
 app.include_router(auth_router, prefix='/api/auth')
+app.include_router(chat_router, prefix='/api/chat')
+app.include_router(message_router, prefix='/api/message')
 # /api/events
 
 
