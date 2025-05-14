@@ -1,4 +1,4 @@
-def extrair_valor(matches, doc):
+def extract_value(matches, doc):
     spans_usados = set()
     valor_total = 0.0
 
@@ -29,3 +29,12 @@ def extrair_valor(matches, doc):
             continue
 
     return round(valor_total, 2) if valor_total else None
+
+def extract_product(matches, doc):
+    products = []
+
+    for match_id, start, end in matches:
+        span = doc[start:end]
+        products.append(span.text)
+
+    return products[0] if products else None
