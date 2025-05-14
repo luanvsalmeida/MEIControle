@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from api.db.session import get_session
+from api.services.nlp.interpreter import interpretar_mensagem
 
 from api.chat.models.message import (
     MessageModel,
@@ -15,6 +16,11 @@ from api.db.config import DATABASE_URL
 # POST /api/message/
 @router.post("/", response_model=MessageModel)
 def send_message(payload: MessageCreateSchema, session: Session = Depends(get_session)):
+    # text interpretation
+    texto = payload.content
+    resultado = interpretar_mensagem(texto)  # <- aqui você chama o helper
+    print(resultado)
+    # store the message in the database
     data = payload.model_dump()
     obj = MessageModel.model_validate(data)
     session.add(obj)

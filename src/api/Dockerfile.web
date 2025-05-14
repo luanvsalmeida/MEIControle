@@ -1,6 +1,6 @@
 # Set the python version as a build-time argument
 # with Python 3.12 as the default
-ARG PYTHON_VERSION=3.12-slim-bullseye
+ARG PYTHON_VERSION=3.11-slim-bullseye
 FROM python:${PYTHON_VERSION}
 
 # Create a virtual environment
@@ -46,6 +46,9 @@ COPY ./ /code
 
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
+
+# Download spaCy models
+RUN python -m spacy download pt_core_news_md
 
 # database isn't available during build
 # run any other commands that do not need the database
