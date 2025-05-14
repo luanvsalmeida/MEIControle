@@ -49,7 +49,7 @@ class MessageModel(SQLModel, table=True):
     )
 
 class MessageCreateSchema(SQLModel):
-    chatID: int
+    chatId: int
     role: RoleEnum
     content: constr(max_length=1000)
     tokens: Optional[List[str]] = None
