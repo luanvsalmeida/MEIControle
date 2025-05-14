@@ -1,3 +1,5 @@
+from .nlp import nlp
+
 def extract_value(matches, doc):
     spans_usados = set()
     valor_total = 0.0
@@ -38,3 +40,18 @@ def extract_product(matches, doc):
         products.append(span.text)
 
     return products[0] if products else None
+
+def extract_operation(matches, doc):
+    op_priority = {
+        "OP_INFLOW": "inflow",
+        "OP_OUTFLOW": "outflow",
+        "OP_REPORT": "report",
+        "OP_FORECAST": "forecast"
+    }
+
+    for match_id, _, _ in matches:
+        op_type = nlp.vocab.strings[match_id]
+        if op_type in op_priority:
+            return op_priority[op_type]
+
+    return None
