@@ -1,10 +1,10 @@
 from .nlp import nlp
-from .matchers import get_value_matcher, get_product_matcher
-from .extractors import extract_value, extract_product
-
+from .matchers import get_value_matcher, get_product_matcher, get_operation_matcher
+from .extractors import extract_value, extract_product, extract_operation
 
 def interpretar_mensagem(text: str) -> dict:
     doc = nlp(text)
+
     # Value
     matcher_value = get_value_matcher()
     matches_value = matcher_value(doc)
@@ -15,9 +15,13 @@ def interpretar_mensagem(text: str) -> dict:
     matches_product = matcher_product(doc)
     product = extract_product(matches_product, doc)
 
+    # Operation
+    matcher_op = get_operation_matcher()
+    matches_op = matcher_op(doc)
+    operation = extract_operation(matches_op, doc)
+
     return {
         "value": value,
-        "product": product
-        # "tipo_operacao": ...,  # ex: venda ou compra
-        # "product": ...
+        "product": product,
+        "operation": operation
     }

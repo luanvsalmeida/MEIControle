@@ -35,7 +35,22 @@ def get_product_matcher():
 
     return matcher
 
-def get_operation_matcher():    # inflow/outflow/chart/previews
-    matcher = Matcher(nlp.voc)
-    # todo...
+def get_operation_matcher():
+    matcher = Matcher(nlp.vocab)
+
+    inflow_terms = ["venda", "vendi", "recebi", "entrada"]
+    outflow_terms = ["compra", "comprei", "gastei", "saída"]
+    report_terms = ["relatório", "resumo", "extrato", "gráfico"]
+    forecast_terms = ["previsão", "prever", "projeção", "estimativa"]
+
+    for term in inflow_terms:
+        matcher.add("OP_INFLOW", [[{"LOWER": term}]])
+    for term in outflow_terms:
+        matcher.add("OP_OUTFLOW", [[{"LOWER": term}]])
+    for term in report_terms:
+        matcher.add("OP_REPORT", [[{"LOWER": term}]])
+    for term in forecast_terms:
+        matcher.add("OP_FORECAST", [[{"LOWER": term}]])
+
     return matcher
+
