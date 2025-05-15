@@ -35,6 +35,7 @@ class OutflowModel(SQLModel, table=True):
     userId: int = Field(nullable=False, foreign_key="usermodel.userId")
     supplier: Optional[str] = Field(default=None)
     value: float = Field(nullable=False)
+    product: str = Field(nullable=False)
     date: datetime = Field(
         default_factory=get_utc_now,
         sa_type=sqlmodel.DateTime(timezone=True),
@@ -45,10 +46,11 @@ class OutflowModel(SQLModel, table=True):
     
 class OutflowCreateSchema(SQLModel):
     userId: int
-    supplier: constr(max_length=50)
+    supplier: Optional[constr(max_length=50)] = None
+    product: constr(max_length=100)
     value: float 
-    type: TypeEnum
-    paymentForm: PaymentEnum
+    type: Optional[TypeEnum] = None
+    paymentForm: Optional[PaymentEnum] = None
 
 class OutflowListSchema(SQLModel):
     results: List[OutflowModel]

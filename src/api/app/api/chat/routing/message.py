@@ -1,5 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
+from api.flows.routing.inflow import send_inflow as inflow_handler
+from api.flows.routing.outflow import send_outflow as outflow_handler
+from api.flows.models.inflow import InflowCreateSchema
+from api.flows.models.outflow import OutflowCreateSchema
+from api.chat.models.chat import ChatModel
+from timescaledb.utils import get_utc_now
+
 
 from api.db.session import get_session
 from api.services.nlp.interpreter import interpretar_mensagem
@@ -13,20 +20,49 @@ from api.chat.models.message import (
 router = APIRouter()
 from api.db.config import DATABASE_URL
 
-# POST /api/message/
 @router.post("/", response_model=MessageModel)
 def send_message(payload: MessageCreateSchema, session: Session = Depends(get_session)):
-    # text interpretation
     texto = payload.content
-    resultado = interpretar_mensagem(texto)  # <- aqui você chama o helper
-    print(resultado)
-    # store the message in the database
+    result = interpretar_mensagem(texto)
+    print(result)
+
+    # Get userId from chatId
+    chat = session.exec(select(ChatModel).where(ChatModel.chatId == payload.chatId)).first()
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+
+    user_id = chat.userId
+
+    # Message storing
     data = payload.model_dump()
     obj = MessageModel.model_validate(data)
     session.add(obj)
     session.commit()
     session.refresh(obj)
-    return obj
+    print(obj)
+
+    # Create (inflow)
+    if result.get("operation") == "inflow":
+        inflow_data = InflowCreateSchema(
+            userId=user_id,
+            value=result.get("value"),
+            product=result.get("product"),
+            date=get_utc_now()
+        )
+        inflow_handler(inflow_data, session)
+
+    # Create (outflow)
+    elif result.get("operation") == "outflow":
+        outflow_data = OutflowCreateSchema(
+            userId=user_id,
+            value=result.get("value"),
+            product=result.get("product"),
+            date=get_utc_now()
+        )
+        outflow_handler(outflow_data, session)
+
+    return obj  # Standard return (Need to be checked)
+
 
 # GET /api/message/{chat_id}
 @router.get("/by_chat/{chat_id}", response_model=MessageListSchema)
