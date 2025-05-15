@@ -1,12 +1,15 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:mei_controle/models/mensagem.dart';
 
 class DialogMessage extends StatelessWidget {
   final Mensagem mensagem;
+  int font;
   late bool isAnnouncer;
   late  String textMessage;
 
-  DialogMessage({required this.mensagem}){
+  DialogMessage({super.key, required this.mensagem, required this.font}){
     isAnnouncer = mensagem.autor == 'usuario' ? true : false;
     textMessage = mensagem.texto;
   }
@@ -29,22 +32,15 @@ class DialogMessage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 10.0),
             child: Text(
               textMessage,
-              style: isAnnouncer ? userStyle : bootStyle,
+              style: TextStyle(
+                color: isAnnouncer ? Colors.white : Colors.black,
+                fontSize: font.toDouble(),
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
       ),
     );
   }
-
-  TextStyle userStyle = TextStyle(
-      color: Colors.white,
-      fontSize: 18.0,
-      fontWeight: FontWeight.w500);
-
-  TextStyle bootStyle = TextStyle(
-    color: Colors.black,
-    fontSize: 18.0,
-    fontWeight: FontWeight.w500,
-  );
 }

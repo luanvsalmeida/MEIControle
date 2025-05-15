@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mei_controle/ui/home-page.dart';
+import 'package:mei_controle/management/ger-ui.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +14,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late bool isDarkMode = false;
+  GerUi gerUi = GerUi.getInstance();
+  bool isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    obterTema();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +49,24 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       if (isDarkMode) {
         isDarkMode = false;
+        salvarTema(false);
       } else {
         isDarkMode = true;
+        salvarTema(true);
       }
+    });
+  }
+
+  Future<void> salvarTema(bool value) async {
+    gerUi.saveDarkModeState(value);
+    print('tema salvo');
+  }
+
+  Future<void> obterTema() async {
+    await gerUi.getDarkModeState().then((tema) {
+      setState(() {
+        isDarkMode = tema;
+      });
     });
   }
 }
