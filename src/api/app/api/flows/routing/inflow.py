@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from api.db.session import get_session
@@ -24,7 +24,7 @@ def send_inflow(payload: InflowCreateSchema, session: Session = Depends(get_sess
 
 # GET /api/inflow/{user_id}
 @router.get("/by_user/{user_id}", response_model=InflowListSchema)
-def send_inflow(user_id: int, session: Session = Depends(get_session)):
+def get_inflow(user_id: int, session: Session = Depends(get_session)):
     query = select(InflowModel).where(InflowModel.userId == user_id).order_by(InflowModel.inflowId)
     results = session.exec(query).all()
     if not results:

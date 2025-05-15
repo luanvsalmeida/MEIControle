@@ -24,14 +24,14 @@ def send_outflow(payload: OutflowCreateSchema, session: Session = Depends(get_se
 
 # GET /api/Outflow/by_user/{user_id}
 @router.get("/by_user/{user_id}", response_model=OutflowListSchema)
-def send_outflow(user_id: int, session: Session = Depends(get_session)):
+def get_outflow(user_id: int, session: Session = Depends(get_session)):
     query = select(OutflowModel).where(OutflowModel.userId == user_id).order_by(OutflowModel.outflowId)
     results = session.exec(query).all()
     if not results:
         raise HTTPException(status_code=404, detail="Outflow not found") 
     return {"results": results, "count": len(results)}
 
-# GET /api/Outflow/{Outflow_id}
+# GET /api/Outflow/{outflow_id}
 @router.get("/{outflow_id}", response_model=OutflowModel)
 def get_outflow_by_id(outflow_id: int, session: Session = Depends(get_session)):
     query = select(OutflowModel).where(OutflowModel.outflowId == outflow_id)
