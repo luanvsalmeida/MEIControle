@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from api.flows.routing.inflow import send_inflow as inflow_handler
 from api.flows.routing.outflow import send_outflow as outflow_handler
+from api.events.routes.forecast import get_forecast as forecast_handler
 from api.flows.models.inflow import InflowCreateSchema
 from api.flows.models.outflow import OutflowCreateSchema
 from api.chat.models.chat import ChatModel
@@ -49,7 +50,7 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             product=result.get("product"),
             date=get_utc_now()
         )
-        inflow_handler(inflow_data, session)
+        obj.content = inflow_handler(inflow_data, session)
 
     # Create (outflow)
     elif result.get("operation") == "outflow":
@@ -59,7 +60,13 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             product=result.get("product"),
             date=get_utc_now()
         )
-        outflow_handler(outflow_data, session)
+        obj.content = outflow_handler(outflow_data, session)
+
+    # Forecast (previsão)
+    elif result.get("operation") == "forecast":
+        forecast = forecast_handler(user_id, session)
+        obj.content = forecast["mensagem"]
+        print(obj.content)
 
     return obj  # Standard return (Need to be checked)
 
