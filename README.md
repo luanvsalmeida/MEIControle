@@ -38,13 +38,19 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
 
 ## 📦 Como Rodar o Projeto
 
-### 🐋 Docker
+### 🐋 Docker (API)
 - Para rodar:
 - `docker compose up --watch`
 - `docker compose run app /bin/bash`ou `docker compose run app python`
 - Para parar o container:
 - `docker compose down` ou `docker compose down -v` (remover volumes)
 
+
+### Flutter (Front-End)
+- Para rodar:
+- `flutter create .`
+- `flutter pub get`
+- `flutter run`
 ---
 
 ## 📌 Status do Projeto
@@ -54,34 +60,40 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
 ---
 
 ## 👥 Equipe
+- Luan Salomão   
+[![GitHub followers](https://img.shields.io/github/followers/luanvsalmeida?label=Follow&style=social)](https://github.com/luanvsalmeida)
+- Cauã Santos   
+[![GitHub followers](https://img.shields.io/github/followers/luanvsalmeida?label=Follow&style=social)](https://github.com/luanvsalmeida)
+- Gabriel Carvalho   
+[![GitHub followers](https://img.shields.io/github/followers/Gabriel2718?label=Follow&style=social)](https://github.com/Gabriel2718)
+- Silvio Henrique   
+[![GitHub followers](https://img.shields.io/github/followers/silvioGPS?label=Follow&style=social)](https://github.com/silvioGPS)
 
--
 
 ---
 
-## 📈 Roadmap (Sugestão de Etapas)
+## 📈 Roadmap
 
-1. **Planejamento e prototipação**
+1. **Planejamento e prototipação ✅**
    - Definir funcionalidades MVP
    - Criar protótipo de telas (Figma, etc.)
 
-2. **Criação do chatbot com IA em Python**
+2. **Criação do chatbot com IA em (DialogFlow/SpaCy) 🛠️** 
    - Interpretar frases com NLP (entrada/saída + categoria + valor)
-   - Salvar temporariamente os dados (pode usar SQLite ou JSON)
 
-3. **Criação da interface Flutter**
+3. **Criação da interface Flutter 🛠️**
    - Tela de chat
    - Tela de relatórios (mock inicial)
 
-4. **Integração com backend (Node.js)**
+4. **Integração com backend (Python/FastAPI) 🛠️**
    - API para salvar e recuperar os dados do usuário
    - Autenticação básica
 
-5. **Geração de relatórios**
+5. **Geração de relatórios ⏳**
    - Gráficos com dados financeiros
    - Exportação para PDF/Excel
 
-6. **Predição com ML**
+6. **Predição com ML ⏳**
    - Usar dados registrados para prever entradas/saídas futuras
 
 ---
