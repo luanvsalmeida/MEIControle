@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from api.flows.routing.inflow import send_inflow as inflow_handler
 from api.flows.routing.outflow import send_outflow as outflow_handler
 from api.events.routes.forecast import get_forecast as forecast_handler
+from api.events.routes.chart import generate_chart as chart_handler
 from api.flows.models.inflow import InflowCreateSchema
 from api.flows.models.outflow import OutflowCreateSchema
 from api.chat.models.chat import ChatModel
@@ -40,7 +41,6 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
     session.add(obj)
     session.commit()
     session.refresh(obj)
-    print(obj)
 
     # Create (inflow)
     if result.get("operation") == "inflow":
@@ -67,6 +67,21 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
         forecast = forecast_handler(user_id, session)
         obj.content = forecast["mensagem"]
         print(obj.content)
+
+            # Chart (gráfico)
+    elif result.get("operation") == "report":
+        print("Chart... estamos no chart")
+        chart_data = chart_handler(user_id, session)
+        # Salva como string simples ou JSON formatado para leitura (melhor com estrutura)
+        mensagem = chart_data["mensagem"]
+        if not all(k in chart_data for k in ("labels", "inflows", "outflows")):
+            raise HTTPException(status_code=500, detail="Erro ao gerar dados do gráfico.")
+        resumo = "\n".join([
+            f"{mes}: Entrada R$ {entrada:.2f}, Saída R$ {saida:.2f}"
+            for mes, entrada, saida in zip(chart_data["labels"], chart_data["inflows"], chart_data["outflows"])
+        ])
+        obj.content = f"{mensagem}\n\n{resumo}"
+
 
     return obj  # Standard return (Need to be checked)
 
