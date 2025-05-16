@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 from typing import Union
-
 from fastapi import FastAPI
 from api.db.session import init_db
 from api.events import router as event_router
@@ -10,6 +9,8 @@ from api.chat.routing.message import router as message_router
 from api.flows.routing.inflow import router as inflow_router
 from api.flows.routing.outflow import router as outflow_router
 from api.subscription.routing import router as sub_router
+from fastapi.staticfiles import StaticFiles
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # before app startup up
@@ -26,6 +27,8 @@ app.include_router(message_router, prefix='/api/message')
 app.include_router(inflow_router, prefix='/api/inflow')
 app.include_router(outflow_router, prefix='/api/outflow')
 app.include_router(sub_router, prefix='/api/subscription')
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # /api/events
 
