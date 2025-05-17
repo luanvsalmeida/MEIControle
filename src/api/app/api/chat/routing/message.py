@@ -50,7 +50,9 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             product=result.get("product"),
             date=get_utc_now()
         )
-        obj.content = inflow_handler(inflow_data, session)
+        inflow_handler(inflow_data, session)
+        obj.content = f'Venda de R$ {result.get("value"):.2f} de {result.get("product")} registrada com sucesso'
+
 
     # Create (outflow)
     elif result.get("operation") == "outflow":
@@ -60,7 +62,9 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             product=result.get("product"),
             date=get_utc_now()
         )
-        obj.content = outflow_handler(outflow_data, session)
+        outflow_handler(outflow_data, session)
+        obj.content = f'Compra de R$ {result.get("value"):.2f} de {result.get("product")} registrada com sucesso'
+
 
     # Forecast (previsão)
     elif result.get("operation") == "forecast":

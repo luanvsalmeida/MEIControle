@@ -98,6 +98,12 @@
     {"label": "revisão de textos", "type": "serviço"},
     {"label": "social media", "type": "serviço"},
     {"label": "produção de conteúdo", "type": "serviço"},
-    {"label": "programador freelance", "type": "serviço"}
+    {"label": "programador freelance", "type": "serviço"},
+    {"label": "embalagens", "type": "produto"},
+    {"label": "embalagem", "type": "produto"},
+    {"label": "ingredientes", "type": "produto"},
+    {"label": "ingrediente", "type": "produto"},
+    {"label": "insumo", "type": "produto"},
+    {"label": "insumos", "type": "produto"}
   ]
   

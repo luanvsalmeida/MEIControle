@@ -1,0 +1,18 @@
+name: mei_controle
+description: Um aplicativo Flutter para controle de MEI.
+version: 1.0.0+1
+
+environment:
+  sdk: '^3.7.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  googleapis_auth: ^1.4.0
+  http: ^0.13.6
+  shared_preferences: ^2.2.2
+  sqflite: ^2.3.0
+  path: ^1.9.0
+
+flutter:
+  uses-material-design: true
