@@ -60,7 +60,9 @@ def get_forecast(user_id: int, session: Session = Depends(get_session)):
 
     return {
         "mensagem": (
-            f"Com base nas tendências anteriores, a previsão para o próximo mês "
-            f"é de entrada de R$ {inflow_prev:.2f} e saída de R$ {outflow_prev:.2f}."
+            #f"Com base nas tendências anteriores, a previsão para o próximo mês "
+            #f"é de entrada de R$ {inflow_prev:.2f} e saída de R$ {outflow_prev:.2f}."
+            f"Com base nas tendencias anteriores, a previsao para o proximo mes "
+            f"e de entrada de RS {inflow_prev:.2f} e saida de RS {outflow_prev:.2f}."
         )
     }

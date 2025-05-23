@@ -3,12 +3,14 @@ class Mensagem {
   late String texto;
   late String autor;
   late DateTime data;
+  final String? graficoPath;
 
   Mensagem({
     this.id,
     required this.texto,
     required this.data,
     required this.autor,
+    this.graficoPath,
   });
 
   Map<String, dynamic> toMap() {

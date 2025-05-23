@@ -3,7 +3,7 @@ import 'package:mei_controle/management/ger-mensagem.dart';
 import 'package:mei_controle/ui/dialog-message.dart';
 import 'package:mei_controle/models/mensagem.dart';
 import 'package:mei_controle/management/ger-ui.dart';
-import 'package:mei_controle/services/api_service.dart';
+import 'package:mei_controle/services/api_service.dart'; 
 import 'package:mei_controle/models/GraphMessage.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,12 +18,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GerUi gerUi = GerUi.getInstance();
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = ApiService(); // instância do serviço de API
   late bool _isDarkMode;
   int? font;
   List<Mensagem> listaMensagens = [];
   final TextEditingController campoController = TextEditingController();
-  bool _isLoading = false;
+  bool _isLoading = false; // Controle de estado para loading
 
   @override
   void initState() {
@@ -31,6 +31,16 @@ class _HomePageState extends State<HomePage> {
     obterLista();
     obterTema();
   }
+
+  Widget? _renderConteudoEspecial(Mensagem mensagem) {
+  if (mensagem.autor == 'assistente' && mensagem.texto.trim().endsWith('.png')) {
+    return GraphMessage(mensagem: mensagem);
+  }
+
+  // Aqui você pode adicionar outras condições no futuro
+
+  return null;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +69,7 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           children: [
                             Icon(
-                              _isDarkMode
-                                  ? Icons.dark_mode_outlined
-                                  : Icons.sunny,
+                              _isDarkMode ? Icons.dark_mode_outlined : Icons.sunny,
                               color: _isDarkMode ? Colors.white : Colors.black,
                               size: 32,
                             ),
@@ -70,10 +78,12 @@ class _HomePageState extends State<HomePage> {
                               activeColor: Colors.white,
                               value: _isDarkMode,
                               onChanged: (value) {
-                                setState(() {
-                                  _isDarkMode = value;
-                                  widget.onToogleTheme();
-                                });
+                                setState(
+                                  () {
+                                    _isDarkMode = value;
+                                    widget.onToogleTheme();
+                                  },
+                                );
                               },
                             ),
                           ],
@@ -83,8 +93,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Icon(
                               Icons.text_fields,
-                              color:
-                                  _isDarkMode ? Colors.white : Colors.black,
+                              color: _isDarkMode ? Colors.white : Colors.black,
                               size: 32,
                             ),
                             SizedBox(width: 20),
@@ -92,9 +101,7 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () => alterarTamanhoFonte(true),
                               icon: Icon(
                                 Icons.arrow_upward,
-                                color: _isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: _isDarkMode ? Colors.white : Colors.black,
                                 size: 32,
                               ),
                             ),
@@ -102,9 +109,7 @@ class _HomePageState extends State<HomePage> {
                             Text(
                               '${font ?? 18}',
                               style: TextStyle(
-                                color: _isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: _isDarkMode ? Colors.white : Colors.black,
                                 fontSize: 28,
                               ),
                             ),
@@ -113,9 +118,7 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () => alterarTamanhoFonte(false),
                               icon: Icon(
                                 Icons.arrow_downward,
-                                color: _isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: _isDarkMode ? Colors.white : Colors.black,
                                 size: 32,
                               ),
                             ),
@@ -148,24 +151,25 @@ class _HomePageState extends State<HomePage> {
                     itemCount: listaMensagens.length,
                     itemBuilder: (context, index) {
                       final mensagem = listaMensagens[index];
-                      if (mensagem.autor == 'assistente' &&
-                          mensagem.texto.trim().endsWith('.png')) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DialogMessage(
-                              mensagem: mensagem,
-                              font: (font ?? 18).toDouble(),
+                      final conteudoEspecial = _renderConteudoEspecial(mensagem);
+
+                      // Se for uma imagem, escondemos o texto na DialogMessage
+                      final textoLimpo = mensagem.texto.trim().endsWith('.png') ? '' : mensagem.texto;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DialogMessage(
+                            mensagem: Mensagem(
+                              autor: mensagem.autor,
+                              texto: textoLimpo,
+                              data: mensagem.data,
                             ),
-                            GraphMessage(mensagem: mensagem),
-                          ],
-                        );
-                      } else {
-                        return DialogMessage(
-                          mensagem: mensagem,
-                          font: (font ?? 18).toDouble(),
-                        );
-                      }
+                            font: (font ?? 18).toDouble(),
+                          ),
+                          if (conteudoEspecial != null) conteudoEspecial,
+                        ],
+                      );
                     },
                   ),
                 ),
@@ -179,17 +183,14 @@ class _HomePageState extends State<HomePage> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color:
-                                _isDarkMode ? Colors.white : Colors.black,
+                            color: _isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(width: 10),
                         Text(
                           'Processando...',
                           style: TextStyle(
-                            color: _isDarkMode
-                                ? Colors.white70
-                                : Colors.black54,
+                            color: _isDarkMode ? Colors.white70 : Colors.black54,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -237,42 +238,54 @@ class _HomePageState extends State<HomePage> {
   Future<void> enviarMensagem() async {
     final mensagemTexto = campoController.text.trim();
     if (mensagemTexto.isEmpty) return;
-
+    
+    // Desabilita o botão de enviar enquanto processa
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final mensagem = Mensagem(
+      // Criar e salvar mensagem do usuário
+      Mensagem mensagem = Mensagem(
         texto: mensagemTexto,
         data: DateTime.now(),
         autor: 'usuario',
       );
       await widget.gerenciador.insMensagem(mensagem);
+      
+      // Limpar campo de texto imediatamente
       campoController.clear();
+      
+      // Atualizar lista para mostrar mensagem do usuário
       await obterLista();
 
+      // Enviar mensagem para a API local
       final respostaTexto = await _apiService.sendMessage(mensagemTexto);
 
-      final resposta = Mensagem(
+      // Criar e salvar resposta do assistente
+      Mensagem resposta = Mensagem(
         texto: respostaTexto,
         data: DateTime.now(),
         autor: 'assistente',
       );
       await widget.gerenciador.insMensagem(resposta);
+
+      // Atualizar a lista com a resposta
       await obterLista();
     } catch (e) {
       print('Erro ao processar mensagem: $e');
-
-      final erroMsg = Mensagem(
-        texto:
-            "Erro ao processar sua solicitação. Verifique se o servidor API está rodando em http://localhost:8002.",
+      
+      // Criar mensagem de erro
+      Mensagem erroMsg = Mensagem(
+        texto: "Erro ao processar sua solicitação. Verifique se o servidor API está rodando em http://localhost:8002.",
         data: DateTime.now(),
         autor: 'assistente',
       );
+      
       await widget.gerenciador.insMensagem(erroMsg);
       await obterLista();
     } finally {
+      // Sempre reativar o botão de enviar
       setState(() {
         _isLoading = false;
       });
@@ -299,16 +312,19 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print('Erro ao obter tema: $e');
       setState(() {
-        _isDarkMode = false;
+        _isDarkMode = false; // Valor padrão em caso de erro
       });
     }
   }
 
+  // Método para alterar o tamanho da fonte
   Future<void> alterarTamanhoFonte(bool aumentar) async {
     final tamanhoAtual = font ?? 18;
     final novoTamanho = aumentar ? tamanhoAtual + 2 : tamanhoAtual - 2;
+    
+    // Limitar o tamanho entre 10 e 30
     final tamanhoFinal = novoTamanho.clamp(10, 30);
-
+    
     if (tamanhoFinal != tamanhoAtual) {
       await gerUi.saveFontSize(tamanhoFinal);
       setState(() {
