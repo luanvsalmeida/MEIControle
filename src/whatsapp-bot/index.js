@@ -37,12 +37,18 @@ async function startBot() {
     console.log("📩 Mensagem recebida:", texto);
 
     try {
-      const response = await axios.post("http://localhost:8002/message", {
-        message: texto,
+      const response = await axios.post("http://localhost:8002/api/message", {
+        chatId: 1, 
+        userId: 1,
+        role: "user",
+        content: texto,
       });
 
-      const reply = response.data.response || "🤖 Não entendi.";
+      console.log(response)
+      console.log(response.data)
+      console.log()
 
+      const reply = response.data.content || "🤖 Não entendi.";
       await sock.sendMessage(from, { text: reply });
     } catch (err) {
       console.error("Erro:", err.message);
