@@ -78,15 +78,18 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
         chart_data = chart_handler(user_id, session)
         # Salva como string simples ou JSON formatado para leitura (melhor com estrutura)
         mensagem = chart_data["mensagem"]
+        file = chart_data["arquivo"]
         if not all(k in chart_data for k in ("labels", "inflows", "outflows")):
             raise HTTPException(status_code=500, detail="Erro ao gerar dados do gráfico.")
         resumo = "\n".join([
-            f"{mes}: Entrada R$ {entrada:.2f}, Saída R$ {saida:.2f}"
+            #f"{mes}: Entrada R$ {entrada:.2f}, Saída R$ {saida:.2f}"
+            f"{mes}: Entrada RS {entrada:.2f}, Saida RS {saida:.2f}"
             for mes, entrada, saida in zip(chart_data["labels"], chart_data["inflows"], chart_data["outflows"])
         ])
-        obj.content = f"{mensagem}\n\n{resumo}"
+        obj.content = f"{mensagem}\n\n{resumo}\n\n{file}"
 
-
+    else:
+        obj.content = f"Nao consegui entender sua mensagem haha. Poderia ser mais claro? Deseja registrar um venda ou compra?"
     return obj  # Standard return (Need to be checked)
 
 

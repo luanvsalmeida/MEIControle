@@ -45,94 +45,11 @@ def generate_chart(user_id: int, session: Session, output_format="png") -> dict:
         plt.close()
 
     return {
-        "mensagem": f"📊 Gráfico/relatório gerado com sucesso.",
+        #"mensagem": f"📊 Gráfico/relatório gerado com sucesso.",
+        "mensagem": f"Grafico/relatorio gerado com sucesso.",
         "arquivo": path,
         "labels": df_grouped["mes"].dt.strftime("%Y-%m").tolist(),
         "inflows": df_grouped.get("inflow", pd.Series([0]*len(df_grouped))).tolist(),
         "outflows": df_grouped.get("outflow", pd.Series([0]*len(df_grouped))).tolist()
     }
-
-
-"""from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
-import pandas as pd
-from api.db.session import get_session
-from api.flows.models.inflow import InflowModel
-from api.flows.models.outflow import OutflowModel
-
-router = APIRouter()
-
-@router.get("/{user_id}")
-def get_chart_data(user_id: int, session: Session = Depends(get_session)):
-    inflows = session.exec(select(InflowModel).where(InflowModel.userId == user_id)).all()
-    outflows = session.exec(select(OutflowModel).where(OutflowModel.userId == user_id)).all()
-
-    if not inflows and not outflows:
-        raise HTTPException(status_code=404, detail="Sem dados suficientes para gerar gráfico.")
-
-    def to_df(transacoes, tipo):
-        return pd.DataFrame([{
-            "data": t.date,
-            "valor": t.value,
-            "tipo": tipo
-        } for t in transacoes])
-
-    df_in = to_df(inflows, "inflow")
-    df_out = to_df(outflows, "outflow")
-    df = pd.concat([df_in, df_out])
-
-    # Agrupa por mês e tipo (entrada/saída)
-    df["mes"] = pd.to_datetime(df["data"]).dt.to_period("M").dt.to_timestamp()
-    grouped = df.groupby(["mes", "tipo"])["valor"].sum().unstack(fill_value=0).reset_index()
-
-    # Prepara dados para frontend
-    chart_data = {
-        "labels": grouped["mes"].dt.strftime("%Y-%m").tolist(),
-        "inflows": grouped.get("inflow", pd.Series([0]*len(grouped))).tolist(),
-        "outflows": grouped.get("outflow", pd.Series([0]*len(grouped))).tolist()
-    }
-
-    return chart_data
-
-
-# chart_handler.py
-from sqlmodel import Session, select
-import pandas as pd
-from api.flows.models.inflow import InflowModel
-from api.flows.models.outflow import OutflowModel
-
-def get_chart(user_id: int, session: Session):
-    inflows = session.exec(select(InflowModel).where(InflowModel.userId == user_id)).all()
-    outflows = session.exec(select(OutflowModel).where(OutflowModel.userId == user_id)).all()
-
-    if not inflows and not outflows:
-        return {
-            "mensagem": "Sem dados suficientes para gerar o gráfico."
-        }
-
-    def to_df(transacoes, tipo):
-        return pd.DataFrame([{
-            "data": t.date,
-            "valor": t.value,
-            "tipo": tipo
-        } for t in transacoes])
-
-    df_in = to_df(inflows, "inflow")
-    df_out = to_df(outflows, "outflow")
-    df = pd.concat([df_in, df_out])
-
-    df["mes"] = pd.to_datetime(df["data"]).dt.to_period("M").dt.to_timestamp()
-    grouped = df.groupby(["mes", "tipo"])["valor"].sum().unstack(fill_value=0).reset_index()
-
-    chart_data = {
-        "labels": grouped["mes"].dt.strftime("%Y-%m").tolist(),
-        "inflows": grouped.get("inflow", pd.Series([0]*len(grouped))).tolist(),
-        "outflows": grouped.get("outflow", pd.Series([0]*len(grouped))).tolist(),
-        "mensagem": "Aqui está o resumo gráfico de suas entradas e saídas mensais."
-    }
-
-    return chart_data
-
-    """
-
 

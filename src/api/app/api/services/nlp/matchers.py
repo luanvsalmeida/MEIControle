@@ -39,9 +39,9 @@ def get_operation_matcher():
     matcher = Matcher(nlp.vocab)
 
     inflow_terms = ["venda", "vendi", "recebi", "entrada"]
-    outflow_terms = ["compra", "comprei", "gastei", "saída"]
-    report_terms = ["relatório", "resumo", "extrato", "gráfico"]
-    forecast_terms = ["previsão", "prever", "projeção", "estimativa"]
+    outflow_terms = ["compra", "comprei", "gastei", "saída", "saida"]
+    report_terms = ["relatório", "relatorio", "resumo", "extrato", "gráfico", "grafico"]
+    forecast_terms = ["previsão", "previsao", "prever", "projeção", "projeçao", "projecao", "estimativa"]
 
     for term in inflow_terms:
         matcher.add("OP_INFLOW", [[{"LOWER": term}]])
