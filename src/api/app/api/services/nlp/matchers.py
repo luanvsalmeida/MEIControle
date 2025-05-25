@@ -38,10 +38,11 @@ def get_product_matcher():
 def get_operation_matcher():
     matcher = Matcher(nlp.vocab)
 
-    inflow_terms = ["venda", "vendi", "recebi", "entrada"]
-    outflow_terms = ["compra", "comprei", "gastei", "saída", "saida"]
+    inflow_terms = ["venda", "registrar venda", "registro de venda", "vendi", "recebi", "entrada"]
+    outflow_terms = ["compra", "registrar compra", "registro de compra", "comprei", "gastei", "saída", "saida"]
     report_terms = ["relatório", "relatorio", "resumo", "extrato", "gráfico", "grafico"]
     forecast_terms = ["previsão", "previsao", "prever", "projeção", "projeçao", "projecao", "estimativa"]
+    product_terms = [["registrar", "produto"], ["cadastrar", "produto"]]
 
     for term in inflow_terms:
         matcher.add("OP_INFLOW", [[{"LOWER": term}]])
@@ -51,6 +52,10 @@ def get_operation_matcher():
         matcher.add("OP_REPORT", [[{"LOWER": term}]])
     for term in forecast_terms:
         matcher.add("OP_FORECAST", [[{"LOWER": term}]])
+    for term_pair in product_terms:
+        matcher.add("OP_SAVE_PRODUCT", [[
+            {"LOWER": term_pair[0]}, {"LOWER": term_pair[1]}
+        ]])
 
     return matcher
 

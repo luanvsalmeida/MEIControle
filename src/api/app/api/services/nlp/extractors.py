@@ -46,12 +46,19 @@ def extract_operation(matches, doc):
         "OP_INFLOW": "inflow",
         "OP_OUTFLOW": "outflow",
         "OP_REPORT": "report",
-        "OP_FORECAST": "forecast"
+        "OP_FORECAST": "forecast",
     }
 
-    for match_id, _, _ in matches:
+    for match_id, start, end in matches:
         op_type = nlp.vocab.strings[match_id]
+
         if op_type in op_priority:
             return op_priority[op_type]
+
+        elif op_type == "OP_SAVE_PRODUCT":
+            # Captura o texto que vem depois de "registrar produto"
+            label_span = doc[end:]
+            label = label_span.text.strip(" ,.:;").lower()
+            return {"type": "save", "label": label}
 
     return None
