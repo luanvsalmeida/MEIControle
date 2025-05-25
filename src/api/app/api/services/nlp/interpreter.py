@@ -20,8 +20,15 @@ def interpretar_mensagem(text: str) -> dict:
     matches_op = matcher_op(doc)
     operation = extract_operation(matches_op, doc)
 
+    if isinstance(operation, dict) and operation.get("type") == "save":
+        return {
+            "operation": "save",
+            "label": operation.get("label")
+        }
+
     return {
         "value": value,
         "product": product,
         "operation": operation
     }
+

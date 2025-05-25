@@ -8,6 +8,8 @@ from api.flows.models.inflow import InflowCreateSchema
 from api.flows.models.outflow import OutflowCreateSchema
 from api.chat.models.chat import ChatModel
 from timescaledb.utils import get_utc_now
+from pathlib import Path
+import json
 
 
 from api.db.session import get_session
@@ -74,7 +76,6 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
 
             # Chart (gráfico)
     elif result.get("operation") == "report":
-        print("Chart... estamos no chart")
         chart_data = chart_handler(user_id, session)
         # Salva como string simples ou JSON formatado para leitura (melhor com estrutura)
         mensagem = chart_data["mensagem"]
@@ -87,6 +88,25 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             for mes, entrada, saida in zip(chart_data["labels"], chart_data["inflows"], chart_data["outflows"])
         ])
         obj.content = f"{mensagem}\n\n{resumo}\n\n{file}"
+
+    elif result.get("operation") == "save":
+        label = result.get("label")
+        if label:
+            novo_produto = {"label": label, "type": "produto"}
+
+            # Caminho para o JSON
+            file_path = Path(__file__).resolve().parent.parent.parent / "data" / "classificationRules.json"
+
+            # Carregar, adicionar e salvar
+            with open(file_path, "r", encoding="utf-8") as f:
+                produtos = json.load(f)
+
+            produtos.append(novo_produto)
+
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(produtos, f, indent=4, ensure_ascii=False)
+
+            return {"message": f"Produto '{label}' salvo com sucesso."}
 
     else:
         obj.content = f"Nao consegui entender sua mensagem haha. Poderia ser mais claro? Deseja registrar um venda ou compra?"
