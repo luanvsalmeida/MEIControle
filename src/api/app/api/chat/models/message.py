@@ -1,3 +1,4 @@
+# api/chat/models/message.py
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
@@ -16,6 +17,12 @@ from timescaledb.utils import get_utc_now
 |     role     |      enum     | required |
 +--------------|---------------|----------|
 |    content   |      str      | required |
++--------------|---------------|----------|
+|    message   |      str      | optional | -> User message content
++--------------|---------------|----------|
+|     chart    |      str      | optional | -> Path to chart file
++--------------|---------------|----------|
+|    report    |      str      | optional | -> Path to report file
 +--------------|---------------|----------|
 |    tokens    |     str []    | optional |
 +--------------|---------------|----------|
@@ -40,7 +47,10 @@ class MessageModel(SQLModel, table=True):
     messageId: Optional[int] = Field(default=None, primary_key=True)
     chatId: int = Field(nullable=False, foreign_key="chatmodel.chatId")
     role: RoleEnum = Field(nullable=False, index=True)
-    content: str = Field(nullable=False) 
+    content: str = Field(nullable=False)  # Main content field (backward compatibility)
+    message: Optional[str] = Field(default=None)  # Separate message field
+    chart: Optional[str] = Field(default=None)    # Path to chart file
+    report: Optional[str] = Field(default=None)   # Path to report file
     tokens: Optional[List[str]] = Field(default=None, sa_type=JSON)
     date: datetime = Field(
         default_factory=get_utc_now,
@@ -52,6 +62,9 @@ class MessageCreateSchema(SQLModel):
     chatId: int
     role: RoleEnum
     content: constr(max_length=1000)
+    message: Optional[str] = None
+    chart: Optional[str] = None
+    report: Optional[str] = None
     tokens: Optional[List[str]] = None
 
 class MessageListSchema(SQLModel):

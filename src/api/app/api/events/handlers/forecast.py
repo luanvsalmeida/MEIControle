@@ -1,4 +1,4 @@
-# api/events/routes/forecast.py
+# api/events/handlers/forecast.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 import pandas as pd

@@ -478,5 +478,13 @@
     {
         "label": "pacoca de banana",
         "type": "produto"
+    },
+    {
+        "label": "caldeirão do nheco nheco",
+        "type": "produto"
+    },
+    {
+        "label": "copo da felicidade",
+        "type": "produto"
     }
 ]

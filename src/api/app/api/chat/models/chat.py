@@ -1,3 +1,4 @@
+# api/chat/models/chat.py
 from datetime import datetime, timezone 
 from typing import List, Optional 
 from sqlalchemy import JSON
