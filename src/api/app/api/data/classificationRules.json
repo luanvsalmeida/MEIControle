@@ -470,5 +470,13 @@
     {
         "label": "rodo de espuma",
         "type": "produto"
+    },
+    {
+        "label": "calcitran b12",
+        "type": "produto"
+    },
+    {
+        "label": "pacoca de banana",
+        "type": "produto"
     }
 ]

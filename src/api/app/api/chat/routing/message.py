@@ -106,7 +106,7 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(produtos, f, indent=4, ensure_ascii=False)
 
-            return {"message": f"Produto '{label}' salvo com sucesso."}
+            obj.content =  f"Produto '{label}' salvo com sucesso."
 
     else:
         obj.content = f"Nao consegui entender sua mensagem haha. Poderia ser mais claro? Deseja registrar um venda ou compra?"
