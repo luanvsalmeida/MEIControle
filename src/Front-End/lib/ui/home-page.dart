@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GerUi gerUi = GerUi.getInstance();
   final ApiService _apiService = ApiService();
+  final ScrollController _scrollController = ScrollController(); // Adicionar ScrollController
   late bool _isDarkMode;
   int? font;
   List<Mensagem> listaMensagens = [];
@@ -30,6 +31,39 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     obterLista();
     obterTema();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // Limpar o controller
+    super.dispose();
+  }
+
+  // Método para rolar para o fim da lista
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      // Usar Future.delayed para garantir que o widget seja completamente renderizado
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
+  // Método para scroll imediato (sem animação) - usado no carregamento inicial
+  void _scrollToBottomInstant() {
+    if (_scrollController.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients && _scrollController.position.maxScrollExtent > 0) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
+      });
+    }
   }
 
   @override
@@ -144,30 +178,39 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: listaMensagens.length,
-                    itemBuilder: (context, index) {
-                      final mensagem = listaMensagens[index];
-                      if (mensagem.autor == 'assistente' &&
-                          mensagem.texto.trim().endsWith('.png')) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DialogMessage(
-                              mensagem: mensagem,
-                              font: (font ?? 18).toDouble(),
-                            ),
-                            GraphMessage(mensagem: mensagem),
-                          ],
-                        );
-                      } else {
-                        return DialogMessage(
-                          mensagem: mensagem,
-                          font: (font ?? 18).toDouble(),
-                        );
-                      }
-                    },
-                  ),
+                  child: listaMensagens.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Nenhuma mensagem ainda.\nInicie uma conversa!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        )
+                      : ListView.builder(
+                          controller: _scrollController,
+                          itemCount: listaMensagens.length,
+                          itemBuilder: (context, index) {
+                            final mensagem = listaMensagens[index];
+                            if (mensagem.autor == 'assistente' &&
+                                mensagem.texto.trim().endsWith('.png')) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  DialogMessage(
+                                    mensagem: mensagem,
+                                    font: (font ?? 18).toDouble(),
+                                  ),
+                                  GraphMessage(mensagem: mensagem),
+                                ],
+                              );
+                            } else {
+                              return DialogMessage(
+                                mensagem: mensagem,
+                                font: (font ?? 18).toDouble(),
+                              );
+                            }
+                          },
+                        ),
                 ),
                 if (_isLoading)
                   Padding(
@@ -251,6 +294,7 @@ class _HomePageState extends State<HomePage> {
       await widget.gerenciador.insMensagem(mensagem);
       campoController.clear();
       await obterLista();
+      _scrollToBottom(); // Rolar para baixo após adicionar mensagem do usuário
 
       final respostaTexto = await _apiService.sendMessage(mensagemTexto);
 
@@ -261,6 +305,7 @@ class _HomePageState extends State<HomePage> {
       );
       await widget.gerenciador.insMensagem(resposta);
       await obterLista();
+      _scrollToBottom(); // Rolar para baixo após adicionar resposta do assistente
     } catch (e) {
       print('Erro ao processar mensagem: $e');
 
@@ -272,6 +317,7 @@ class _HomePageState extends State<HomePage> {
       );
       await widget.gerenciador.insMensagem(erroMsg);
       await obterLista();
+      _scrollToBottom(); // Rolar para baixo após adicionar mensagem de erro
     } finally {
       setState(() {
         _isLoading = false;
@@ -282,9 +328,19 @@ class _HomePageState extends State<HomePage> {
   Future<void> obterLista() async {
     try {
       final listaObtida = await widget.gerenciador.getAllMensagens();
+      final bool isInitialLoad = listaMensagens.isEmpty;
+      
       setState(() {
         listaMensagens = listaObtida;
       });
+      
+      if (isInitialLoad && listaMensagens.isNotEmpty) {
+        // No carregamento inicial, usar scroll instantâneo
+        _scrollToBottomInstant();
+      } else if (!isInitialLoad) {
+        // Para novas mensagens, usar scroll animado
+        _scrollToBottom();
+      }
     } catch (e) {
       print('Erro ao obter mensagens: $e');
     }
