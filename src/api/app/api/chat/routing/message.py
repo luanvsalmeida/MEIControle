@@ -8,6 +8,7 @@ from api.events.handlers.chart import generate_chart as chart_handler
 from api.flows.models.inflow import InflowCreateSchema
 from api.flows.models.outflow import OutflowCreateSchema
 from api.chat.models.chat import ChatModel
+from api.services.ai.chatgpt_client import gpt_answer
 from timescaledb.utils import get_utc_now
 from pathlib import Path
 import json
@@ -138,8 +139,9 @@ def send_message(payload: MessageCreateSchema, session: Session = Depends(get_se
             response_message = "Nome do produto não fornecido para salvamento."
 
     else:
-        # Handle unrecognized operations
-        response_message = "Não consegui entender sua mensagem. Poderia ser mais claro? Deseja registrar uma venda, compra, gerar relatório ou previsão?"
+        # Handle unrecognized operations        
+        print("Operação não reconhecida. Enviando para o ChatGPT...")
+        response_message = gpt_answer(texto)
 
     # Set response fields
     obj.content = response_message  # For backward compatibility
