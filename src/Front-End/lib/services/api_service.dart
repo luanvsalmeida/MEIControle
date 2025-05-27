@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
+import 'package:http/http.dart' as http;
 
 class ApiResponse {
   final String content;
@@ -66,8 +66,9 @@ class ApiService {
       
       // Configuração de headers completa
       final headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept': 'application/json; charset=utf-8',
+        'Accept-Charset': 'utf-8',
       };
 
       // Primeira tentativa de requisição
@@ -112,7 +113,9 @@ class ApiService {
       print('Resposta recebida: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        // Garantir decodificação UTF-8 correta
+        final responseBody = utf8.decode(response.bodyBytes);
+        final data = jsonDecode(responseBody);
         return ApiResponse.fromJson(data);
       } else {
         print('Erro na API: ${response.statusCode}');
