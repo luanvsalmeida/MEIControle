@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mei_controle/management/ger-mensagem.dart';
-import 'package:mei_controle/ui/dialog-message.dart';
+import 'package:mei_controle/ui/enhanced_message.dart'; // Nova importação
 import 'package:mei_controle/models/mensagem.dart';
 import 'package:mei_controle/management/ger-ui.dart';
 import 'package:mei_controle/services/api_service.dart';
-import 'package:mei_controle/models/GraphMessage.dart';
 
 class HomePage extends StatefulWidget {
   final Function onToogleTheme;
@@ -19,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GerUi gerUi = GerUi.getInstance();
   final ApiService _apiService = ApiService();
-  final ScrollController _scrollController = ScrollController(); // Adicionar ScrollController
+  final ScrollController _scrollController = ScrollController();
   late bool _isDarkMode;
   int? font;
   List<Mensagem> listaMensagens = [];
@@ -35,14 +34,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Limpar o controller
+    _scrollController.dispose();
     super.dispose();
   }
 
-  // Método para rolar para o fim da lista
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      // Usar Future.delayed para garantir que o widget seja completamente renderizado
       Future.delayed(const Duration(milliseconds: 100), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
@@ -55,7 +52,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Método para scroll imediato (sem animação) - usado no carregamento inicial
   void _scrollToBottomInstant() {
     if (_scrollController.hasClients) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -117,8 +113,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Icon(
                               Icons.text_fields,
-                              color:
-                                  _isDarkMode ? Colors.white : Colors.black,
+                              color: _isDarkMode ? Colors.white : Colors.black,
                               size: 32,
                             ),
                             SizedBox(width: 20),
@@ -126,9 +121,7 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () => alterarTamanhoFonte(true),
                               icon: Icon(
                                 Icons.arrow_upward,
-                                color: _isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: _isDarkMode ? Colors.white : Colors.black,
                                 size: 32,
                               ),
                             ),
@@ -136,9 +129,7 @@ class _HomePageState extends State<HomePage> {
                             Text(
                               '${font ?? 18}',
                               style: TextStyle(
-                                color: _isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: _isDarkMode ? Colors.white : Colors.black,
                                 fontSize: 28,
                               ),
                             ),
@@ -147,9 +138,7 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () => alterarTamanhoFonte(false),
                               icon: Icon(
                                 Icons.arrow_downward,
-                                color: _isDarkMode
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: _isDarkMode ? Colors.white : Colors.black,
                                 size: 32,
                               ),
                             ),
@@ -191,24 +180,10 @@ class _HomePageState extends State<HomePage> {
                           itemCount: listaMensagens.length,
                           itemBuilder: (context, index) {
                             final mensagem = listaMensagens[index];
-                            if (mensagem.autor == 'assistente' &&
-                                mensagem.texto.trim().endsWith('.png')) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  DialogMessage(
-                                    mensagem: mensagem,
-                                    font: (font ?? 18).toDouble(),
-                                  ),
-                                  GraphMessage(mensagem: mensagem),
-                                ],
-                              );
-                            } else {
-                              return DialogMessage(
-                                mensagem: mensagem,
-                                font: (font ?? 18).toDouble(),
-                              );
-                            }
+                            return EnhancedMessage(
+                              mensagem: mensagem,
+                              font: (font ?? 18).toDouble(),
+                            );
                           },
                         ),
                 ),
@@ -222,17 +197,14 @@ class _HomePageState extends State<HomePage> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color:
-                                _isDarkMode ? Colors.white : Colors.black,
+                            color: _isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(width: 10),
                         Text(
                           'Processando...',
                           style: TextStyle(
-                            color: _isDarkMode
-                                ? Colors.white70
-                                : Colors.black54,
+                            color: _isDarkMode ? Colors.white70 : Colors.black54,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -286,6 +258,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
+      // Adiciona mensagem do usuário
       final mensagem = Mensagem(
         texto: mensagemTexto,
         data: DateTime.now(),
@@ -294,30 +267,34 @@ class _HomePageState extends State<HomePage> {
       await widget.gerenciador.insMensagem(mensagem);
       campoController.clear();
       await obterLista();
-      _scrollToBottom(); // Rolar para baixo após adicionar mensagem do usuário
+      _scrollToBottom();
 
-      final respostaTexto = await _apiService.sendMessage(mensagemTexto);
+      // Chama a API e recebe a resposta estruturada
+      final apiResponse = await _apiService.sendMessage(mensagemTexto);
 
+      // Cria mensagem com os dados da resposta
       final resposta = Mensagem(
-        texto: respostaTexto,
+        texto: apiResponse.content,
         data: DateTime.now(),
         autor: 'assistente',
+        chartPath: apiResponse.chartPath,
+        reportPath: apiResponse.reportPath,
       );
+      
       await widget.gerenciador.insMensagem(resposta);
       await obterLista();
-      _scrollToBottom(); // Rolar para baixo após adicionar resposta do assistente
+      _scrollToBottom();
     } catch (e) {
       print('Erro ao processar mensagem: $e');
 
       final erroMsg = Mensagem(
-        texto:
-            "Erro ao processar sua solicitação. Verifique se o servidor API está rodando em http://localhost:8002.",
+        texto: "Erro ao processar sua solicitação. Verifique se o servidor API está rodando em http://localhost:8002.",
         data: DateTime.now(),
         autor: 'assistente',
       );
       await widget.gerenciador.insMensagem(erroMsg);
       await obterLista();
-      _scrollToBottom(); // Rolar para baixo após adicionar mensagem de erro
+      _scrollToBottom();
     } finally {
       setState(() {
         _isLoading = false;
@@ -335,10 +312,8 @@ class _HomePageState extends State<HomePage> {
       });
       
       if (isInitialLoad && listaMensagens.isNotEmpty) {
-        // No carregamento inicial, usar scroll instantâneo
         _scrollToBottomInstant();
       } else if (!isInitialLoad) {
-        // Para novas mensagens, usar scroll animado
         _scrollToBottom();
       }
     } catch (e) {
