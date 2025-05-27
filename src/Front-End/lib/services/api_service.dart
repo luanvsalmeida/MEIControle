@@ -2,6 +2,32 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 
+class ApiResponse {
+  final String content;
+  final String? chartPath;
+  final String? reportPath;
+  final String? message;
+
+  ApiResponse({
+    required this.content,
+    this.chartPath,
+    this.reportPath,
+    this.message,
+  });
+
+  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    return ApiResponse(
+      content: json['content'] ?? json['message'] ?? '[Sem resposta]',
+      chartPath: json['chart'],
+      reportPath: json['report'],
+      message: json['message'],
+    );
+  }
+
+  bool get hasChart => chartPath != null && chartPath!.isNotEmpty;
+  bool get hasReport => reportPath != null && reportPath!.isNotEmpty;
+}
+
 class ApiService {
   late final String baseUrl;
   final int chatId = 1;
@@ -22,7 +48,7 @@ class ApiService {
     }
   }
 
-  Future<String> sendMessage(String message) async {
+  Future<ApiResponse> sendMessage(String message) async {
     final url = Uri.parse('$baseUrl/api/message');
     
     print('Enviando requisição para: $url');
@@ -78,7 +104,7 @@ class ApiService {
           );
         } else {
           print('Redirecionamento sem header Location');
-          return '[Erro: Redirecionamento sem destino]';
+          return ApiResponse(content: '[Erro: Redirecionamento sem destino]');
         }
       }
 
@@ -87,18 +113,25 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        
-        // Extrai o campo 'content' da resposta
-        return data['content'] ?? '[Sem resposta]';
+        return ApiResponse.fromJson(data);
       } else {
         print('Erro na API: ${response.statusCode}');
         print('Headers de resposta: ${response.headers}');
         print('Resposta: ${response.body}');
-        return '[Erro na comunicação com API: ${response.statusCode}]';
+        
+        return ApiResponse(content: '[Erro na comunicação com API: ${response.statusCode}]');
       }
     } catch (e) {
       print('Exceção ao chamar API: $e');
-      return '[Erro na comunicação com API: ${e.toString()}]';
+      return ApiResponse(content: '[Erro na comunicação com API: ${e.toString()}]');
     }
+  }
+
+  String getFullUrl(String path) {
+    if (path.startsWith('/code/api/')) {
+      // Remove '/code/api' do início do path
+      return '$baseUrl${path.substring(9)}';
+    }
+    return '$baseUrl$path';
   }
 }
