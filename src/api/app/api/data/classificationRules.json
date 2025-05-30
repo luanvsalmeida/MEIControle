@@ -502,5 +502,29 @@
     {
         "label": "fubá",
         "type": "produto"
+    },
+    {
+        "label": "fruta",
+        "type": "produto"
+    },
+    {
+        "label": "insumos",
+        "type": "produto"
+    },
+    {
+        "label": "copo da felicidade",
+        "type": "produto"
+    },
+    {
+        "label": "bolo de pote",
+        "type": "produto"
+    },
+    {
+        "label": "paçoca",
+        "type": "produto"
+    },
+    {
+        "label": "bolo de pote",
+        "type": "produto"
     }
 ]
