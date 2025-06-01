@@ -160,3 +160,7 @@ yarn.lock
 # Arquivos gerados por ferramentas de build
 /public/
 .cache/
+src/api/.env
+src/api/.env
+src/api/.env
+src/api/.env.compose

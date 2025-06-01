@@ -526,5 +526,13 @@
     {
         "label": "bolo de pote",
         "type": "produto"
+    },
+    {
+        "label": "fruta",
+        "type": "produto"
+    },
+    {
+        "label": "pinto de borracha",
+        "type": "produto"
     }
 ]

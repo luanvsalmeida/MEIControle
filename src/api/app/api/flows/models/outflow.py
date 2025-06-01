@@ -52,6 +52,7 @@ class OutflowCreateSchema(SQLModel):
     value: float 
     type: Optional[TypeEnum] = None
     paymentForm: Optional[PaymentEnum] = None
+    date: Optional[datetime] = None  
 
 class OutflowListSchema(SQLModel):
     results: List[OutflowModel]

@@ -19,8 +19,8 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
 
 - **Frontend:** Flutter
 - **Backend:** FastAPI
-- **IA / Processamento de Linguagem Natural:** Python (possivelmente com modelos como spaCy, Transformers ou custom LLM)
-- **Banco de Dados:** A definir (sugestões: Firebase, PostgreSQL, MongoDB)
+- **IA / Processamento de Linguagem Natural:** Python (pspaCy e custom LLM)
+- **Banco de Dados:** PostgreSQL
 - **Outros:** Pandas, Matplotlib, Scikit-learn (para análise e previsão)
 
 ---
@@ -31,7 +31,7 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
 - Classificação automática dos registros financeiros
 - Geração de relatórios com gráficos
 - Predição de receitas e despesas futuras
-- Exportação de dados em formato PDF/Excel
+- Exportação de dados em formato CSV
 - Interface mobile amigável e prática
 
 ---
@@ -78,7 +78,7 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
    - Definir funcionalidades MVP
    - Criar protótipo de telas (Figma, etc.)
 
-2. **Criação do chatbot com IA em (DialogFlow/SpaCy) 🛠️** 
+2. **Criação do chatbot com IA em (SpaCy) 🔍** 
    - Interpretar frases com NLP (entrada/saída + categoria + valor)
 
 3. **Criação da interface Flutter 🛠️**
@@ -89,11 +89,14 @@ A inteligência artificial interpreta os comandos, classifica como entrada ou sa
    - API para salvar e recuperar os dados do usuário
    - Autenticação básica
 
-5. **Geração de relatórios ⏳**
+5. **Geração de relatórios ✅**
    - Gráficos com dados financeiros
    - Exportação para PDF/Excel
 
-6. **Predição com ML ⏳**
+6. **Predição com ML ✅**
    - Usar dados registrados para prever entradas/saídas futuras
+
+7. **Lembretes de Compromissos ⏳**
+   - API lembra o usuário sobre compromissos 
 
 ---
